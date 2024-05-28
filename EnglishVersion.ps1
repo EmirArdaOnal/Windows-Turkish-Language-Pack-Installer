@@ -3,30 +3,39 @@
 ## Add English Language Pack to running Windows Image ##
 ########################################################
 
-## Disable Language Pack Cleanup ##
-Disable-ScheduledTask -TaskPath "\Microsoft\Windows\AppxDeploymentClient\" -TaskName "Pre-staged app cleanup"
+$Language = "en-US"
+Add-WindowsCapability -Online -Name "Language.Basic~~~$Language~0.0.1.0"
+Add-WindowsCapability -Online -Name "Language.Handwriting~~~$Language~0.0.1.0"
+Add-WindowsCapability -Online -Name "Language.OCR~~~$Language~0.0.1.0"
+Add-WindowsCapability -Online -Name "Language.Speech~~~$Language~0.0.1.0"
+Set-WinUILanguageOverride -Language $Language
+Set-WinUserLanguageList $Language -Force
+Set-WinSystemLocale $Language
+Set-Culture $Language
 
-## Set Language Pack Content Store ##
-[string]$LIPContent = "E:"
+$Language = "en-US"
+# Dil paketi indirme ve yükleme
+Add-WindowsCapability -Online -Name "Language.Basic~~~$Language~0.0.1.0"
+# İsteğe bağlı dil özelliklerini yükleyin
+Add-WindowsCapability -Online -Name "Language.Handwriting~~~$Language~0.0.1.0"
+Add-WindowsCapability -Online -Name "Language.OCR~~~$Language~0.0.1.0"
+Add-WindowsCapability -Online -Name "Language.Speech~~~$Language~0.0.1.0"
+# Sistem dilini yapılandırma
+Set-WinUILanguageOverride -Language $Language
+Set-WinUILanguageFallback -Language $Language
+Set-WinUserLanguageList $Language -Force
+Set-WinSystemLocale $Language
+Set-Culture $Language
 
-## Add English Language Pack ##
-Add-AppProvisionedPackage -Online -PackagePath $LIPContent\en-us\LanguageExperiencePack.en-us.Neutral.appx -LicensePath $LIPContent\en-us\License.xml
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-Client-Language-Pack_x64_en-us.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-LanguageFeatures-Basic-en-us-Package~31bf3856ad364e35~amd64~~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-LanguageFeatures-Handwriting-en-us-Package~31bf3856ad364e35~amd64~~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-LanguageFeatures-OCR-en-us-Package~31bf3856ad364e35~amd64~~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-LanguageFeatures-Speech-en-us-Package~31bf3856ad364e35~amd64~~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-LanguageFeatures-TextToSpeech-en-us-Package~31bf3856ad364e35~amd64~~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-NetFx3-OnDemand-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-InternetExplorer-Optional-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-MSPaint-FoD-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-Notepad-FoD-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-PowerShell-ISE-FOD-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-Printing-WFS-FoD-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-StepsRecorder-Package~31bf3856ad364e35~amd64~en-us~.cab
-Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-WordPad-FoD-Package~31bf3856ad364e35~amd64~en-us~.cab
-
-## Add English Language to User Language List ##
 $LanguageList = Get-WinUserLanguageList
 $LanguageList.Add("en-US")
-Set-WinUserLanguageList $LanguageList -force
+Set-WinUserLanguageList $LanguageList -Force
+if ($?) {
+    Write-Host "Dil paketi başarıyla eklendi. Ayarlar kısmından dilin üstüne tıklayıp 'Seçenekler' ve sonra 'Dil paketini indir'e basınız."
+} else {
+    Write-Host "Dil paketi eklenirken bir hata oluştu."
+}
+
+
+# Yeniden başlatma gerekebilir
+Restart-Computer
